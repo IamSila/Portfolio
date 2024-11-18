@@ -1,0 +1,68 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+   <!-- link to styles -->
+    <link rel="stylesheet" href="{% static '/styles/styles.css' %}">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <!-- THE PROFILE IMAGE AND THE TEXT OF MY NAME -->
+            <div class="logo">
+                <img class="profile-pic" src="{% static '/images/profile.jpeg' %}" alt="profile">
+                <span>SILA MULINGI</span>
+            </div>
+
+          <ul class="nav-links">
+            <li><a href="#home">HOME</a></li>
+            <li><a href="#about">ABOUT</a></li>
+            <li><a href="#projects">PROJECTS</a></li>
+            <li><a href="#Contact">CONTACT</a></li>
+          </ul>  
+
+        </nav>
+    </header>
+
+
+
+
+    <nav class="side-nav">
+        <a href="twitter">Twitter</a>
+        <a href="linkedin"> Linked in</a>
+        <a href="facebook"> Facebook</a>
+        <a href="github">Github</a>
+
+    </nav>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {% block body%}
+
+    {% endblock%}
+
+</body>
+</html>
