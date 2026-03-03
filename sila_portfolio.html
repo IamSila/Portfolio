@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sila Mulingi — Developer & Security Researcher</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   DESIGN SYSTEM — matches blog_systems_programming.html
+   Dark terminal aesthetic: #0a0a0a base, #e8ff47 acid yellow,
+   Space Mono body, Syne display, grid + noise textures
+============================================================ */
+:root {
+  --bg:       #0a0a0a;
+  --surface:  #111111;
+  --surface2: #161616;
+  --border:   #222222;
+  --border2:  #2e2e2e;
+  --accent:   #e8ff47;
+  --accent2:  #ff6b35;
+  --accent3:  #47ffe8;
+  --text:     #e8e4da;
+  --muted:    #666666;
+  --muted2:   #444444;
+  --white:    #ffffff;
+
+  --font-display: 'Syne', sans-serif;
+  --font-body:    'Space Mono', monospace;
+
+  --nav-h: 60px;
+  --transition: 0.25s ease;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.8;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* Noise overlay */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 1000;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none; opacity: 0.45;
+}
+
+/* Custom cursor */
+.cursor {
+  width: 8px; height: 8px;
+  background: var(--accent); border-radius: 50%;
+  position: fixed; top: 0; left: 0;
+  pointer-events: none; z-index: 9999;
+  transform: translate(-50%,-50%);
+  transition: width .15s, height .15s;
+}
+.cursor-ring {
+  width: 32px; height: 32px;
+  border: 1px solid rgba(232,255,71,.35); border-radius: 50%;
+  position: fixed; top: 0; left: 0;
+  pointer-events: none; z-index: 9998;
+  transform: translate(-50%,-50%);
+  transition: transform .12s ease-out, width .2s, height .2s;
+}
+.cursor.big { width: 14px; height: 14px; }
+.cursor-ring.big { width: 44px; height: 44px; opacity: .6; }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+  height: var(--nav-h);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 3rem;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--transition), background var(--transition);
+}
+nav.scrolled {
+  border-color: var(--border);
+  background: rgba(10,10,10,.95);
+  backdrop-filter: blur(10px);
+}
+.nav-logo {
+  font-family: var(--font-display);
+  font-size: 1rem; font-weight: 800; color: var(--text);
+}
+.nav-logo span { color: var(--accent); }
+.nav-links { display: flex; gap: 0; list-style: none; }
+.nav-links a {
+  font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--muted); text-decoration: none;
+  padding: 0.4rem 1rem; border: 1px solid transparent;
+  transition: all var(--transition);
+}
+.nav-links a:hover { color: var(--accent); border-color: var(--border2); }
+.nav-links a.active { color: var(--bg); background: var(--accent); border-color: var(--accent); }
+.nav-ham { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+.nav-ham span { display: block; width: 22px; height: 1px; background: var(--text); }
+
+/* ── PAGE SYSTEM ── */
+.page { display: none; min-height: 100vh; padding-top: var(--nav-h); }
+.page.active { display: block; }
+
+/* ── SHARED ── */
+.grid-bg {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 60px 60px;
+  opacity: 0.5; pointer-events: none;
+}
+.glow { position: absolute; border-radius: 50%; pointer-events: none; }
+
+section { padding: 5rem 3rem; border-top: 1px solid var(--border); }
+
+.sec-head { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 3.5rem; }
+.sec-num { font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); white-space: nowrap; }
+.sec-num::before { content: '// '; color: var(--muted); }
+.sec-title { font-family: var(--font-display); font-size: clamp(1.8rem,3.5vw,2.6rem); font-weight: 800; color: var(--white); letter-spacing: -0.02em; }
+.sec-line { flex: 1; height: 1px; background: var(--border); }
+
+.label { font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; }
+.label::before { content: '// '; color: var(--muted); }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font-family: var(--font-body); font-size: 11px;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  text-decoration: none; cursor: pointer; border: none;
+  padding: 0.8rem 1.8rem; transition: all var(--transition);
+}
+.btn-primary { background: var(--accent); color: var(--bg); border: 1px solid var(--accent); }
+.btn-primary:hover { background: transparent; color: var(--accent); }
+.btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border2); }
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+.tag { display: inline-block; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.25rem 0.7rem; border: 1px solid var(--border2); color: var(--muted); transition: all var(--transition); }
+.tag:hover { border-color: var(--accent); color: var(--accent); }
+.tag.y { border-color: rgba(232,255,71,.3); color: var(--accent); background: rgba(232,255,71,.05); }
+.tag.o { border-color: rgba(255,107,53,.3); color: var(--accent2); background: rgba(255,107,53,.05); }
+.tag.c { border-color: rgba(71,255,232,.3); color: var(--accent3); background: rgba(71,255,232,.05); }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+.anim { opacity:0; animation: fadeUp .65s ease forwards; }
+.d1{animation-delay:.05s} .d2{animation-delay:.15s} .d3{animation-delay:.25s} .d4{animation-delay:.38s} .d5{animation-delay:.52s}
+
+/* ── HERO ── */
+#hero {
+  min-height: calc(100vh - var(--nav-h));
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 0 3rem 3.5rem; position: relative; overflow: hidden;
+}
+.hero-name {
+  font-family: var(--font-display);
+  font-size: clamp(4rem,10vw,9rem);
+  font-weight: 800; line-height: 0.92;
+  letter-spacing: -0.03em; position: relative; z-index: 2; margin-bottom: 1.2rem;
+}
+.hero-name .hl { color: var(--accent); display: block; }
+.hero-eyebrow { font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.5rem; position: relative; z-index: 2; }
+.hero-eyebrow::before { content: '// '; color: var(--muted); }
+.hero-sub { font-size: clamp(.85rem,1.5vw,1rem); color: var(--muted); max-width: 520px; line-height: 1.7; margin-bottom: 2.5rem; position: relative; z-index: 2; }
+.hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; position: relative; z-index: 2; margin-bottom: 3rem; }
+.hero-meta { display: flex; gap: 3rem; flex-wrap: wrap; padding-top: 2rem; border-top: 1px solid var(--border); position: relative; z-index: 2; }
+.hero-meta-item label { display: block; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: .3rem; }
+.hero-meta-item span { font-size: 13px; color: var(--text); }
+.hero-scroll { position: absolute; bottom: 3.5rem; right: 3rem; z-index: 2; writing-mode: vertical-rl; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+
+/* Ticker */
+.ticker { padding: 1.5rem 3rem; border-top: 1px solid var(--border); display: flex; gap: 2.5rem; flex-wrap: wrap; align-items: center; }
+.ticker-lbl { font-size: 10px; letter-spacing: .25em; text-transform: uppercase; color: var(--accent); white-space: nowrap; }
+.ticker-lbl::before { content: '// '; color: var(--muted); }
+
+/* ── ABOUT ── */
+.about-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 5rem; max-width: 1100px; }
+.about-body p { margin-bottom: 1.4rem; color: #c8c4bb; line-height: 1.9; }
+.about-body p:first-child { color: var(--text); }
+.skills-wrap { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .5rem; }
+.about-stats { display: flex; flex-direction: column; gap: 1px; background: var(--border); }
+.stat-box { background: var(--surface); padding: 2rem; transition: background var(--transition); position: relative; overflow: hidden; }
+.stat-box::before { content:''; position:absolute; top:0; left:0; bottom:0; width:2px; background:var(--accent); transform:scaleY(0); transform-origin:top; transition:transform var(--transition); }
+.stat-box:hover { background: var(--surface2); }
+.stat-box:hover::before { transform: scaleY(1); }
+.stat-num { font-family: var(--font-display); font-size: 3rem; font-weight: 800; color: var(--accent); line-height: 1; }
+.stat-lbl { font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); margin-top: .4rem; }
+.stat-box.inv { background: var(--accent); }
+.stat-box.inv .stat-num { color: var(--bg); }
+.stat-box.inv .stat-lbl { color: rgba(10,10,10,.6); }
+
+/* ── PROJECTS ── */
+.projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px,1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+.proj-card { background: var(--surface); padding: 2.5rem; position: relative; overflow: hidden; transition: background var(--transition); }
+.proj-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--accent); transform:scaleX(0); transform-origin:left; transition:transform var(--transition); }
+.proj-card:nth-child(2)::before { background: var(--accent2); }
+.proj-card:nth-child(3)::before { background: var(--accent3); }
+.proj-card:hover { background: var(--surface2); }
+.proj-card:hover::before { transform: scaleX(1); }
+.proj-num { font-size: 10px; letter-spacing: .2em; color: var(--muted); margin-bottom: 1.2rem; }
+.proj-num::before { content: '// '; }
+.proj-name { font-family: var(--font-display); font-size: 1.3rem; font-weight: 800; color: var(--white); margin-bottom: .9rem; line-height: 1.25; }
+.proj-desc { font-size: 12px; color: var(--muted); line-height: 1.7; margin-bottom: 1.5rem; }
+.proj-tags { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: 1.8rem; }
+.proj-tag { font-size: 10px; letter-spacing: .08em; padding: .2rem .6rem; background: var(--surface2); color: var(--muted); border: 1px solid var(--border2); }
+.proj-links { display: flex; gap: 1.5rem; }
+.proj-link { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color var(--transition); }
+.proj-link:hover { color: var(--accent); }
+
+/* ── TIMELINE ── */
+.timeline { position: relative; }
+.timeline::before { content:''; position:absolute; left:0; top:0; bottom:0; width:1px; background:var(--border2); }
+.tl-item { padding: 0 0 3.5rem 3rem; position: relative; }
+.tl-dot { position:absolute; left:-5px; top:4px; width:11px; height:11px; border-radius:50%; background:var(--bg); border:1px solid var(--accent2); transition: background var(--transition), border-color var(--transition); }
+.tl-item:hover .tl-dot { background: var(--accent); border-color: var(--accent); }
+.tl-period { font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--accent); margin-bottom: .6rem; }
+.tl-role { font-family: var(--font-display); font-size: 1.15rem; font-weight: 800; color: var(--white); margin-bottom: .25rem; }
+.tl-org { font-size: 11px; color: var(--muted); margin-bottom: .9rem; }
+.tl-desc { font-size: 12px; color: #c8c4bb; line-height: 1.8; max-width: 600px; }
+.tl-tags { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 1rem; }
+
+/* ── BLOG ── */
+.blog-layout { display: grid; grid-template-columns: 1fr 300px; gap: 1px; background: var(--border); }
+.blog-main { background: var(--bg); }
+.blog-cards { display: flex; flex-direction: column; gap: 1px; background: var(--border); }
+.blog-card { background: var(--surface); padding: 2.5rem; cursor: pointer; transition: background var(--transition); position: relative; overflow: hidden; }
+.blog-card::after { content:'→'; position:absolute; right:2rem; top:50%; transform:translateY(-50%) translateX(8px); opacity:0; color:var(--accent); font-size:1.2rem; transition: all var(--transition); }
+.blog-card:hover { background: var(--surface2); }
+.blog-card:hover::after { opacity:1; transform:translateY(-50%) translateX(0); }
+.blog-meta { display:flex; gap:1.2rem; align-items:center; margin-bottom:.7rem; }
+.blog-date { font-size:10px; letter-spacing:.15em; color:var(--muted); }
+.blog-cat { font-size:10px; letter-spacing:.1em; text-transform:uppercase; padding:.2rem .6rem; background:rgba(232,255,71,.07); color:var(--accent); border:1px solid rgba(232,255,71,.2); }
+.blog-title { font-family:var(--font-display); font-size:1.2rem; font-weight:800; color:var(--white); margin-bottom:.6rem; line-height:1.3; }
+.blog-exc { font-size:12px; color:var(--muted); line-height:1.7; max-width:560px; }
+
+.blog-sidebar { background: var(--surface); }
+.sb-inner { padding: 2rem; border-bottom: 1px solid var(--border); }
+.sb-ttl { font-family:var(--font-display); font-size:.95rem; font-weight:800; color:var(--white); margin-bottom:1rem; }
+.add-btn { width:100%; padding:.85rem; background:var(--accent); color:var(--bg); font-family:var(--font-body); font-size:11px; letter-spacing:.15em; text-transform:uppercase; font-weight:700; border:1px solid var(--accent); cursor:pointer; transition: all var(--transition); margin-bottom:.5rem; }
+.add-btn:hover { background:transparent; color:var(--accent); }
+.sb-desc { font-size:11px; color:var(--muted); line-height:1.7; }
+
+.blog-reader { display: none; }
+.blog-reader.open { display: block; }
+.reader-back { display:inline-flex; align-items:center; gap:.5rem; font-size:11px; letter-spacing:.15em; text-transform:uppercase; color:var(--muted); cursor:pointer; background:none; margin-bottom:2.5rem; transition:all var(--transition); padding:.5rem .8rem; border:1px solid var(--border2); }
+.reader-back:hover { border-color:var(--accent); color:var(--accent); }
+.reader-hdr { margin-bottom:3rem; padding-bottom:2rem; border-bottom:1px solid var(--border); }
+.reader-cat { display:inline-block; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--accent); margin-bottom:1rem; }
+.reader-cat::before { content:'// '; color:var(--muted); }
+.reader-title { font-family:var(--font-display); font-size:clamp(2rem,5vw,3.5rem); font-weight:800; color:var(--white); line-height:1.05; letter-spacing:-.025em; margin-bottom:1rem; }
+.reader-meta { font-size:11px; color:var(--muted); }
+.reader-body { max-width:700px; font-size:14px; line-height:1.9; color:#c8c4bb; }
+.reader-body p { margin-bottom:1.4rem; }
+.reader-body h2 { font-family:var(--font-display); font-size:1.6rem; font-weight:800; color:var(--white); margin:3rem 0 1rem; letter-spacing:-.02em; }
+.reader-body h3 { font-family:var(--font-display); font-size:1.1rem; font-weight:700; color:var(--accent); margin:2rem 0 .7rem; }
+.reader-body code { font-size:12px; background:var(--surface2); padding:.15rem .4rem; border:1px solid var(--border2); color:#a8e6a3; }
+.reader-body pre { background:var(--surface2); border:1px solid var(--border2); border-left:3px solid var(--accent); padding:1.5rem; overflow-x:auto; margin:2rem 0; font-size:12px; color:#a8e6a3; line-height:1.8; }
+.reader-body blockquote { border-left:3px solid var(--accent); padding:1rem 1.5rem; background:rgba(232,255,71,.03); margin:2rem 0; font-family:var(--font-display); font-size:1.15rem; font-weight:700; color:var(--white); }
+
+/* ── CONTACT ── */
+.contact-grid { display:grid; grid-template-columns:1fr 1fr; gap:5rem; max-width:1000px; }
+.contact-hed { font-family:var(--font-display); font-size:2.4rem; font-weight:800; color:var(--white); line-height:1.15; margin-bottom:1.2rem; letter-spacing:-.02em; }
+.contact-hed em { font-style:italic; color:var(--accent); }
+.contact-items { display:flex; flex-direction:column; gap:1px; margin-top:2rem; background:var(--border); }
+.contact-item { background:var(--surface); padding:1.2rem 1.5rem; display:flex; align-items:center; gap:1.2rem; transition:background var(--transition); }
+.contact-item:hover { background:var(--surface2); }
+.ci-icon { font-size:1.1rem; width:36px; height:36px; display:flex; align-items:center; justify-content:center; border:1px solid var(--border2); flex-shrink:0; }
+.ci-lbl { font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); display:block; margin-bottom:.15rem; }
+.ci-val { font-size:12px; color:var(--text); }
+.ci-val a { color:var(--text); text-decoration:none; transition:color var(--transition); }
+.ci-val a:hover { color:var(--accent); }
+.contact-form { display:flex; flex-direction:column; gap:1rem; }
+.fg { display:flex; flex-direction:column; gap:.4rem; }
+.fg label { font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); }
+.fg input, .fg textarea { background:var(--surface); border:1px solid var(--border2); padding:.8rem 1rem; color:var(--text); font-family:var(--font-body); font-size:13px; transition:border-color var(--transition); resize:vertical; outline:none; }
+.fg input:focus, .fg textarea:focus { border-color:var(--accent); }
+.fg textarea { min-height:120px; }
+
+/* ── MODAL ── */
+.modal-overlay { display:none; position:fixed; inset:0; z-index:600; background:rgba(0,0,0,.88); backdrop-filter:blur(6px); align-items:center; justify-content:center; padding:2rem; }
+.modal-overlay.open { display:flex; }
+.modal { background:var(--surface); border:1px solid var(--border2); width:100%; max-width:660px; max-height:90vh; overflow-y:auto; padding:2.5rem; }
+.modal-hdr { display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; }
+.modal-ttl { font-family:var(--font-display); font-size:1.4rem; font-weight:800; color:var(--white); }
+.modal-close { background:none; border:1px solid var(--border2); color:var(--muted); width:34px; height:34px; font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all var(--transition); }
+.modal-close:hover { border-color:var(--accent2); color:var(--accent2); }
+.modal-form { display:flex; flex-direction:column; gap:1.2rem; }
+
+/* ── FOOTER ── */
+footer { border-top:1px solid var(--border); padding:2rem 3rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; background:var(--surface); }
+.footer-logo { font-family:var(--font-display); font-weight:800; font-size:1rem; color:var(--white); }
+.footer-logo span { color:var(--accent); }
+.footer-copy { font-size:11px; color:var(--muted); }
+.footer-links { display:flex; gap:0; }
+.footer-links a { font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); text-decoration:none; padding:.3rem .8rem; border:1px solid transparent; transition:all var(--transition); }
+.footer-links a:hover { border-color:var(--border2); color:var(--accent); }
+
+/* ── MOBILE ── */
+@media (max-width: 860px) {
+  nav { padding: 0 1.5rem; }
+  .nav-links { display: none; }
+  .nav-links.open { display:flex; flex-direction:column; gap:0; position:fixed; inset:var(--nav-h) 0 0 0; background:rgba(10,10,10,.98); padding:2rem; z-index:499; }
+  .nav-links.open a { font-size:1.1rem; padding:1rem; border-bottom:1px solid var(--border); }
+  .nav-ham { display: flex; }
+  #hero { padding: 2rem 1.5rem 3rem; }
+  section { padding: 3.5rem 1.5rem; }
+  .about-grid, .contact-grid { grid-template-columns:1fr; gap:3rem; }
+  .blog-layout { grid-template-columns:1fr; background:none; }
+  .blog-sidebar { display:none; }
+  .hero-scroll { display:none; }
+  .ticker { padding:1.2rem 1.5rem; }
+  footer { padding:1.5rem; }
+  body { cursor:auto; }
+  .cursor, .cursor-ring { display:none; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-logo">Sila <span>Mulingi</span></div>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#" onclick="return go('home')"     data-p="home"     class="active">Home</a></li>
+    <li><a href="#" onclick="return go('about')"    data-p="about">About</a></li>
+    <li><a href="#" onclick="return go('projects')" data-p="projects">Projects</a></li>
+    <li><a href="#" onclick="return go('exp')"      data-p="exp">Experience</a></li>
+    <li><a href="#" onclick="return go('blog')"     data-p="blog">Blog</a></li>
+    <li><a href="#" onclick="return go('contact')"  data-p="contact">Contact</a></li>
+  </ul>
+  <div class="nav-ham" id="ham" onclick="toggleNav()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+
+  <section id="hero" style="border-top:none;padding-top:0;">
+    <div class="grid-bg"></div>
+    <div class="glow" style="top:-180px;right:-180px;width:640px;height:640px;background:radial-gradient(circle,rgba(232,255,71,.09) 0%,transparent 68%);"></div>
+    <div class="glow" style="bottom:-120px;left:22%;width:480px;height:480px;background:radial-gradient(circle,rgba(255,107,53,.07) 0%,transparent 68%);"></div>
+
+    <div class="hero-eyebrow anim d1">Full-Stack Developer · Systems Programmer · Security Researcher</div>
+    <h1 class="hero-name anim d2">Sila<span class="hl">Mulingi.</span></h1>
+    <p class="hero-sub anim d3">I build efficient, secure, and scalable systems — from high-level web applications down to the metal of system programming and vulnerability research.</p>
+    <div class="hero-ctas anim d4">
+      <button class="btn btn-primary" onclick="go('projects')">View My Work →</button>
+      <button class="btn btn-ghost"   onclick="go('contact')">Get In Touch</button>
+    </div>
+    <div class="hero-meta anim d5">
+      <div class="hero-meta-item"><label>Based In</label><span>Nairobi, Kenya</span></div>
+      <div class="hero-meta-item"><label>Focus</label><span>Full-Stack + Systems + Security</span></div>
+      <div class="hero-meta-item"><label>Languages</label><span>C · Python · JS</span></div>
+      <div class="hero-meta-item"><label>Commits</label><span>45+ Systems Repo</span></div>
+    </div>
+    <div class="hero-scroll">Scroll ↓</div>
+  </section>
+
+  <div class="ticker">
+    <span class="ticker-lbl">Core Stack</span>
+    <div style="display:flex;flex-wrap:wrap;gap:.5rem;">
+      <span class="tag y">Python</span><span class="tag y">C</span>
+      <span class="tag o">JavaScript</span><span class="tag o">React</span><span class="tag o">Node.js</span>
+      <span class="tag c">Django</span><span class="tag c">MongoDB</span>
+      <span class="tag">MySQL</span><span class="tag">Linux</span><span class="tag">API Security</span><span class="tag">POSIX</span>
+    </div>
+  </div>
+
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">Featured</span>
+      <h2 class="sec-title">Latest Project</h2>
+      <div class="sec-line"></div>
+    </div>
+    <div class="proj-card" style="border:1px solid var(--border);max-width:860px;">
+      <div class="proj-num">001 — Featured Work</div>
+      <div class="proj-name">Face Recognition Attendance System</div>
+      <p class="proj-desc">A real-time attendance system using facial recognition with OpenCV and deep learning models. Features automated attendance marking, admin dashboard, class timetables, and full reporting.</p>
+      <div class="proj-tags">
+        <span class="proj-tag">Python</span><span class="proj-tag">OpenCV</span><span class="proj-tag">Django</span><span class="proj-tag">Face Recognition</span><span class="proj-tag">MySQL</span>
+      </div>
+      <div class="proj-links">
+        <a href="https://github.com/IamSila/attendance-system_with_face_recognition.git" target="_blank" class="proj-link">Source Code →</a>
+        <a href="#" onclick="return go('projects')" class="proj-link">All Projects →</a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ABOUT -->
+<div class="page" id="page-about">
+  <section style="border-top:none;">
+    <div class="sec-head">
+      <span class="sec-num">01</span>
+      <h2 class="sec-title">About Me</h2>
+      <div class="sec-line"></div>
+    </div>
+    <div class="about-grid">
+      <div class="about-body">
+        <p>I'm a versatile developer with expertise spanning full-stack web development, systems programming, and web security research. I build efficient, secure, and scalable solutions across different technology stacks.</p>
+        <p>My skills range from modern web technologies to low-level system programming and security testing. I'm passionate about creating robust applications, understanding how systems work at a foundational level, and continuously pushing my technical limits.</p>
+        <p>I currently operate across three disciplines: building production web apps with the MERN stack and Django; doing deep dives into C systems programming and Linux kernel internals; and conducting bug bounty security research — identifying and responsibly disclosing vulnerabilities in real systems.</p>
+        <p>Based in Nairobi, Kenya. Always open to interesting problems and meaningful collaborations.</p>
+        <div class="label" style="margin-top:2.5rem;">Technical Skills</div>
+        <div class="skills-wrap">
+          <span class="tag y">Python</span><span class="tag y">C</span>
+          <span class="tag o">JavaScript</span><span class="tag o">React</span><span class="tag o">Node.js</span>
+          <span class="tag c">Django</span><span class="tag c">MongoDB</span>
+          <span class="tag">MySQL</span><span class="tag">Linux</span><span class="tag">System Programming</span>
+          <span class="tag">API Security</span><span class="tag">Web Security</span>
+          <span class="tag">OpenCV</span><span class="tag">POSIX</span><span class="tag">OWASP</span><span class="tag">Penetration Testing</span>
+        </div>
+      </div>
+      <div class="about-stats">
+        <div class="stat-box"><div class="stat-num">3+</div><div class="stat-lbl">Production Projects</div></div>
+        <div class="stat-box"><div class="stat-num">45</div><div class="stat-lbl">Systems Commits</div></div>
+        <div class="stat-box"><div class="stat-num">4+</div><div class="stat-lbl">Years Coding</div></div>
+        <div class="stat-box inv"><div class="stat-num" style="font-size:1.5rem;">NBO 🇰🇪</div><div class="stat-lbl">Nairobi, Kenya</div></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- PROJECTS -->
+<div class="page" id="page-projects">
+  <section style="border-top:none;">
+    <div class="sec-head">
+      <span class="sec-num">02</span>
+      <h2 class="sec-title">Projects</h2>
+      <div class="sec-line"></div>
+    </div>
+    <div class="projects-grid">
+      <div class="proj-card">
+        <div class="proj-num">001</div>
+        <div class="proj-name">Face Recognition Attendance System</div>
+        <p class="proj-desc">Real-time attendance tracking using facial recognition with OpenCV and deep learning. Admin dashboard, class timetables, automated marking and reporting.</p>
+        <div class="proj-tags"><span class="proj-tag">Python</span><span class="proj-tag">OpenCV</span><span class="proj-tag">Django</span><span class="proj-tag">Face Recognition</span><span class="proj-tag">MySQL</span></div>
+        <div class="proj-links"><a href="https://github.com/IamSila/attendance-system_with_face_recognition.git" target="_blank" class="proj-link">Source Code →</a></div>
+      </div>
+      <div class="proj-card">
+        <div class="proj-num">002</div>
+        <div class="proj-name">School Management & Billing System</div>
+        <p class="proj-desc">Comprehensive school management with automated fee billing, receipt generation, student records, and financial reporting. Role-based access control throughout.</p>
+        <div class="proj-tags"><span class="proj-tag">React</span><span class="proj-tag">Node.js</span><span class="proj-tag">Express</span><span class="proj-tag">MongoDB</span><span class="proj-tag">PDF Generation</span></div>
+        <div class="proj-links"><a href="https://github.com/IamSila/billing_and_receipting_system.git" target="_blank" class="proj-link">Source Code →</a></div>
+      </div>
+      <div class="proj-card">
+        <div class="proj-num">003</div>
+        <div class="proj-name">Custom Shell Implementation in C</div>
+        <p class="proj-desc">A Unix-like shell built from scratch supporting command execution, I/O redirection, piping, background processes, and custom built-in commands.</p>
+        <div class="proj-tags"><span class="proj-tag">C</span><span class="proj-tag">Linux</span><span class="proj-tag">System Calls</span><span class="proj-tag">Process Management</span><span class="proj-tag">UNIX</span></div>
+        <div class="proj-links"><a href="https://github.com/IamSila/simple_shell.git" target="_blank" class="proj-link">Source Code →</a></div>
+      </div>
+      <div class="proj-card">
+        <div class="proj-num">004</div>
+        <div class="proj-name">C Systems Programming Journal</div>
+        <p class="proj-desc">A documented deep dive into systems development — files & directories, processes, signals, multithreading, and POSIX APIs. 45+ commits of pure C exploration.</p>
+        <div class="proj-tags"><span class="proj-tag">C</span><span class="proj-tag">POSIX</span><span class="proj-tag">pthreads</span><span class="proj-tag">Linux</span><span class="proj-tag">System Calls</span></div>
+        <div class="proj-links">
+          <a href="https://github.com/IamSila/C_systems_programming" target="_blank" class="proj-link">Source Code →</a>
+          <a href="#" onclick="return go('blog')" class="proj-link">Read Blog →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- EXPERIENCE -->
+<div class="page" id="page-exp">
+  <section style="border-top:none;">
+    <div class="sec-head">
+      <span class="sec-num">03</span>
+      <h2 class="sec-title">Experience</h2>
+      <div class="sec-line"></div>
+    </div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-period">2023 — Present</div>
+        <div class="tl-role">Bug Bounty Hunter</div>
+        <div class="tl-org">Independent Security Research</div>
+        <p class="tl-desc">Identified and reported critical security vulnerabilities across various platforms. Specialised in XSS, CSRF, and authentication bypass techniques.</p>
+        <div class="tl-tags"><span class="tag y">Web Security</span><span class="tag">Penetration Testing</span><span class="tag">OWASP Top 10</span></div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-period">2022 — Present</div>
+        <div class="tl-role">Full-Stack Project Developer</div>
+        <div class="tl-org">Personal Projects</div>
+        <p class="tl-desc">Developed multiple full-stack applications including the Face Recognition Attendance System and School Management System. Secure authentication, data encryption, and scalable architecture.</p>
+        <div class="tl-tags"><span class="tag o">Full-Stack Dev</span><span class="tag">System Design</span><span class="tag">Database Design</span></div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-period">2023 — Present</div>
+        <div class="tl-role">Systems Programming & Low-Level Development</div>
+        <div class="tl-org">Academic & Personal Projects</div>
+        <p class="tl-desc">Built system-level applications including a custom shell, file system utilities, and process management tools. Deep understanding of Linux kernel, system calls, memory management, and concurrent programming.</p>
+        <div class="tl-tags"><span class="tag c">C Programming</span><span class="tag">Linux Kernel</span><span class="tag">System Programming</span></div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-period">2022 — Present</div>
+        <div class="tl-role">Technology Stack Mastery</div>
+        <div class="tl-org">Self-Directed Learning</div>
+        <p class="tl-desc">Mastered the MERN stack, computer vision with OpenCV, and cybersecurity fundamentals. Completed multiple certifications and built a portfolio of production-grade projects.</p>
+        <div class="tl-tags"><span class="tag o">MERN Stack</span><span class="tag">Computer Vision</span><span class="tag">Cybersecurity</span></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- BLOG -->
+<div class="page" id="page-blog">
+  <section style="border-top:none;">
+    <div class="sec-head">
+      <span class="sec-num">04</span>
+      <h2 class="sec-title">Blog</h2>
+      <div class="sec-line"></div>
+    </div>
+
+    <div id="blogListView">
+      <div class="blog-layout">
+        <div class="blog-main">
+          <div class="blog-cards" id="blogCards"></div>
+        </div>
+        <div class="blog-sidebar">
+          <div class="sb-inner">
+            <div class="sb-ttl">Write a Post</div>
+            <p class="sb-desc" style="margin-bottom:1.2rem;">Share what you're building, learning, or discovering.</p>
+            <button class="add-btn" onclick="openModal()">+ New Post</button>
+          </div>
+          <div class="sb-inner">
+            <div class="sb-ttl">Topics</div>
+            <div id="topicTags" style="display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.5rem;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="blogReaderView" class="blog-reader">
+      <button class="reader-back" onclick="closeReader()">← Back to Blog</button>
+      <div class="reader-hdr">
+        <div class="reader-cat"   id="rCat"></div>
+        <h1 class="reader-title"  id="rTitle"></h1>
+        <div class="reader-meta"  id="rMeta"></div>
+      </div>
+      <div class="reader-body" id="rBody"></div>
+    </div>
+  </section>
+</div>
+
+<!-- CONTACT -->
+<div class="page" id="page-contact">
+  <section style="border-top:none;">
+    <div class="sec-head">
+      <span class="sec-num">05</span>
+      <h2 class="sec-title">Contact</h2>
+      <div class="sec-line"></div>
+    </div>
+    <div class="contact-grid">
+      <div>
+        <h2 class="contact-hed">Let's build something<br><em>remarkable.</em></h2>
+        <p style="color:var(--muted);font-size:13px;max-width:380px;line-height:1.8;">Whether it's a web application, security collaboration, systems project, or just a conversation about technology — I'm always interested.</p>
+        <div class="contact-items">
+          <div class="contact-item"><div class="ci-icon">📍</div><div><span class="ci-lbl">Location</span><div class="ci-val">Nairobi, Kenya</div></div></div>
+          <div class="contact-item"><div class="ci-icon">✉️</div><div><span class="ci-lbl">Email</span><div class="ci-val"><a href="mailto:silamulingi@gmail.com">silamulingi@gmail.com</a></div></div></div>
+          <div class="contact-item"><div class="ci-icon">📱</div><div><span class="ci-lbl">Phone</span><div class="ci-val"><a href="tel:+254717486607">0717 486 607</a></div></div></div>
+          <div class="contact-item"><div class="ci-icon">💻</div><div><span class="ci-lbl">GitHub</span><div class="ci-val"><a href="https://github.com/IamSila" target="_blank">github.com/IamSila</a></div></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="contact-form">
+          <div class="fg"><label>Your Name</label><input type="text" placeholder="Jane Doe"></div>
+          <div class="fg"><label>Email</label><input type="email" placeholder="jane@example.com"></div>
+          <div class="fg"><label>Subject</label><input type="text" placeholder="Let's work together..."></div>
+          <div class="fg"><label>Message</label><textarea placeholder="Tell me about your project..."></textarea></div>
+          <button class="btn btn-primary" style="align-self:flex-start;" onclick="submitContact(this)">Send Message →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Sila <span>Mulingi</span></div>
+  <div class="footer-copy">© 2025 · All Rights Reserved</div>
+  <div class="footer-links">
+    <a href="https://github.com/IamSila" target="_blank">GitHub</a>
+    <a href="mailto:silamulingi@gmail.com">Email</a>
+    <a href="#" onclick="return go('blog')">Blog</a>
+  </div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOut(event)">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div class="modal-ttl">// New Blog Post</div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-form">
+      <div class="fg"><label>Title</label><input type="text" id="pTitle" placeholder="e.g. Going Deeper into C Systems..."></div>
+      <div class="fg"><label>Category</label><input type="text" id="pCat" placeholder="Systems Programming, Web Dev, Security..."></div>
+      <div class="fg"><label>Short Excerpt (shown on card)</label><textarea id="pExc" style="min-height:70px;" placeholder="A brief description..."></textarea></div>
+      <div class="fg"><label>Content  (## heading, ### sub, > blockquote)</label><textarea id="pBody" style="min-height:220px;" placeholder="## Introduction&#10;&#10;Write your post here...&#10;&#10;## Section&#10;&#10;More content...&#10;&#10;> A blockquote."></textarea></div>
+      <button class="btn btn-primary" onclick="publishPost()">Publish Post →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* Cursor */
+const cur=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+(function animR(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animR);})();
+document.querySelectorAll('a,button,.proj-card,.blog-card,.tl-item,.stat-box,.contact-item').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.classList.add('big');ring.classList.add('big');});
+  el.addEventListener('mouseleave',()=>{cur.classList.remove('big');ring.classList.remove('big');});
+});
+
+/* Nav */
+window.addEventListener('scroll',()=>document.getElementById('navbar').classList.toggle('scrolled',scrollY>20));
+function toggleNav(){document.getElementById('navLinks').classList.toggle('open');}
+
+/* Pages */
+function go(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelectorAll('.nav-links a').forEach(a=>a.classList.toggle('active',a.dataset.p===name));
+  document.getElementById('navLinks').classList.remove('open');
+  scrollTo(0,0); return false;
+}
+
+/* Blog */
+const DEFAULTS=[
+  {id:1,title:"Going Deeper — My Journey into C Systems Programming",category:"Systems Programming",date:"March 2025",
+   excerpt:"Most developers write code. Fewer understand what happens when that code actually runs. This is the story of my deliberate descent into systems programming.",
+   content:`## Why Systems Programming?
+
+There's a certain kind of developer who isn't satisfied with knowing *what* works. They need to know *why*. Why does the OS schedule processes this way? What happens at the kernel boundary when I open a file?
+
+These aren't just academic questions — they're the questions that separate engineers who fix symptoms from those who fix root causes.
+
+## Five Modules, One Machine
+
+**Module 01 — Files & Directories.** Low-level file I/O using system calls. No standard library abstractions. The file descriptor — a small integer from the kernel — is your entire handle to the file table. Everything is a file.
+
+**Module 02 — Linux Environment.** All those PATH, HOME, USER variables are a null-terminated array of strings passed to every process at startup. Digging into how getenv() and putenv() work changed how I think about program initialization.
+
+**Module 03 — Processes & Signals.** Understanding fork() properly rewires your mental model. A child process is a full copy of its parent — same memory, same file descriptors — except with a different PID.
+
+**Module 04 — Multithreading in C.** Concurrency was humbling. Threads share memory, which sounds like a feature until two threads read and write the same variable simultaneously. I worked through mutexes, deadlock conditions, and condition variables.
+
+**Module 05 — POSIX Standards & System-Level APIs.** Working directly with clock_gettime(), mmap(), mq_open(), sem_init() makes you acutely aware of the contract between user space and kernel space.
+
+## Why Any of This Matters
+
+> "Abstractions are only useful if you understand what they're abstracting."
+
+When a containerized service leaks memory, knowing the virtual memory system lets you diagnose it in minutes. When a multi-threaded endpoint starts serving corrupted data, you recognise the race condition immediately.
+
+Systems programming changes your relationship with the computer. The machine stops being a black box and becomes something comprehensible. That shift carries over into everything else you build.
+
+The journey continues. 45 commits in — many more to go.`},
+  {id:2,title:"Building a Face Recognition Attendance System with Django & OpenCV",category:"Web Development",date:"January 2025",
+   excerpt:"How I built a real-time attendance system that replaces paper registers with facial recognition — combining computer vision, Django backends, and practical database design.",
+   content:`## The Problem
+
+Paper attendance registers are inefficient, prone to errors, and easy to game. I wanted to automate the process entirely using facial recognition.
+
+## The Stack
+
+Python and Django for the backend, OpenCV and deep learning models for face detection and recognition, MySQL for persistent storage, and a web-based admin dashboard for reporting.
+
+## Face Recognition Pipeline
+
+The pipeline works in three stages: face detection extracts faces from video frames in real time; encoding converts each face into a 128-dimensional vector; matching compares this vector against the stored encodings database.
+
+## What I Learned
+
+> Building production computer vision systems is fundamentally different from running tutorial notebooks.
+
+Performance under load was the biggest challenge. Processing every frame in real time requires careful optimisation — skipping frames, resizing inputs, running detection only when the scene changes meaningfully.
+
+## The Result
+
+A fully functional system deployed for a real school, replacing manual registers with automated, accurate, real-time attendance tracking.`}
+];
+
+let blogs=(()=>{try{return JSON.parse(localStorage.getItem('sila_v3'))||DEFAULTS;}catch(e){return DEFAULTS;}})();
+function save(){try{localStorage.setItem('sila_v3',JSON.stringify(blogs));}catch(e){}}
+
+function renderBlog(){
+  const cards=document.getElementById('blogCards');
+  const topics=document.getElementById('topicTags');
+  const cats=new Set(blogs.map(b=>b.category));
+  cards.innerHTML=blogs.map(b=>`
+    <div class="blog-card" onclick="openPost(${b.id})">
+      <div class="blog-meta"><span class="blog-date">${b.date}</span><span class="blog-cat">${b.category}</span></div>
+      <div class="blog-title">${b.title}</div>
+      <p class="blog-exc">${b.excerpt}</p>
+    </div>`).join('');
+  topics.innerHTML=[...cats].map(c=>`<span class="tag y" style="cursor:pointer">${c}</span>`).join('');
+}
+
+function openPost(id){
+  const p=blogs.find(b=>b.id===id); if(!p)return;
+  document.getElementById('rCat').textContent=p.category;
+  document.getElementById('rTitle').textContent=p.title;
+  document.getElementById('rMeta').textContent=p.date+' · Sila Mulingi';
+  document.getElementById('rBody').innerHTML=md(p.content);
+  document.getElementById('blogListView').style.display='none';
+  document.getElementById('blogReaderView').classList.add('open');
+  scrollTo(0,0);
+}
+function closeReader(){
+  document.getElementById('blogListView').style.display='block';
+  document.getElementById('blogReaderView').classList.remove('open');
+}
+function md(t){
+  return t.split('\n\n').map(b=>{
+    if(b.startsWith('## '))return`<h2>${b.slice(3)}</h2>`;
+    if(b.startsWith('### '))return`<h3>${b.slice(4)}</h3>`;
+    if(b.startsWith('> '))return`<blockquote><p>${b.slice(2)}</p></blockquote>`;
+    let p=b.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>').replace(/`(.+?)`/g,'<code>$1</code>');
+    return`<p>${p}</p>`;
+  }).join('\n');
+}
+
+/* Modal */
+function openModal(){document.getElementById('modalOverlay').classList.add('open');document.body.style.overflow='hidden';}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('open');document.body.style.overflow='';}
+function closeModalOut(e){if(e.target===document.getElementById('modalOverlay'))closeModal();}
+
+function publishPost(){
+  const title=document.getElementById('pTitle').value.trim();
+  const cat=document.getElementById('pCat').value.trim();
+  const exc=document.getElementById('pExc').value.trim();
+  const body=document.getElementById('pBody').value.trim();
+  if(!title||!body){alert('Please add a title and content.');return;}
+  const M=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const d=new Date();
+  blogs.unshift({id:Date.now(),title,category:cat||'General',date:M[d.getMonth()]+' '+d.getFullYear(),excerpt:exc||body.slice(0,150)+'...',content:body});
+  save(); renderBlog(); closeModal();
+  ['pTitle','pCat','pExc','pBody'].forEach(id=>document.getElementById(id).value='');
+}
+
+/* Contact */
+function submitContact(btn){
+  const o=btn.textContent;
+  btn.textContent='Message Sent ✓';
+  btn.style.cssText='background:var(--accent3);border-color:var(--accent3);color:var(--bg)';
+  setTimeout(()=>{btn.textContent=o;btn.style.cssText='';},3000);
+}
+
+renderBlog();
+</script>
+</body>
+</html>
