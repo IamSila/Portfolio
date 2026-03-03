@@ -8,15 +8,15 @@
 <style>
 /* ============================================================
    DESIGN SYSTEM — matches blog_systems_programming.html
-   Bright terminal aesthetic: #0d0f1a midnight navy base, #d4ff00 acid yellow,
+   Bright terminal aesthetic: #141414 base, #d4ff00 acid yellow,
    Space Mono body, Syne display, grid + noise textures
 ============================================================ */
 :root {
-  --bg:       #0d0f1a;
-  --surface:  #13162b;
-  --surface2: #1a1e35;
-  --border:   #252a45;
-  --border2:  #2f3558;
+  --bg:       #141414;
+  --surface:  #1e1e1e;
+  --surface2: #252525;
+  --border:   #333333;
+  --border2:  #444444;
   --accent:   #d4ff00;
   --accent2:  #ff7a3d;
   --accent3:  #00ffe5;
@@ -84,7 +84,7 @@ nav {
 }
 nav.scrolled {
   border-color: var(--border);
-  background: rgba(13,15,26,.97);
+  background: rgba(20,20,20,.95);
   backdrop-filter: blur(10px);
 }
 .nav-logo {
@@ -193,7 +193,7 @@ section { padding: 5rem 3rem; border-top: 1px solid var(--border); }
 .stat-lbl { font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); margin-top: .4rem; }
 .stat-box.inv { background: var(--accent); }
 .stat-box.inv .stat-num { color: var(--bg); }
-.stat-box.inv .stat-lbl { color: rgba(13,15,26,.6); }
+.stat-box.inv .stat-lbl { color: rgba(20,20,20,.6); }
 
 /* ── PROJECTS ── */
 .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px,1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); }
@@ -305,7 +305,7 @@ footer { border-top:1px solid var(--border); padding:2rem 3rem; display:flex; ju
 @media (max-width: 860px) {
   nav { padding: 0 1.5rem; }
   .nav-links { display: none; }
-  .nav-links.open { display:flex; flex-direction:column; gap:0; position:fixed; inset:var(--nav-h) 0 0 0; background:rgba(13,15,26,.98); padding:2rem; z-index:499; }
+  .nav-links.open { display:flex; flex-direction:column; gap:0; position:fixed; inset:var(--nav-h) 0 0 0; background:rgba(20,20,20,.98); padding:2rem; z-index:499; }
   .nav-links.open a { font-size:1.1rem; padding:1rem; border-bottom:1px solid var(--border); }
   .nav-ham { display: flex; }
   #hero { padding: 2rem 1.5rem 3rem; }
@@ -347,8 +347,8 @@ footer { border-top:1px solid var(--border); padding:2rem 3rem; display:flex; ju
 
   <section id="hero" style="border-top:none;padding-top:0;">
     <div class="grid-bg"></div>
-    <div class="glow" style="top:-180px;right:-180px;width:640px;height:640px;background:radial-gradient(circle,rgba(212,255,0,.15) 0%,transparent 68%);"></div>
-    <div class="glow" style="bottom:-120px;left:22%;width:480px;height:480px;background:radial-gradient(circle,rgba(255,122,61,.11) 0%,transparent 68%);"></div>
+    <div class="glow" style="top:-180px;right:-180px;width:640px;height:640px;background:radial-gradient(circle,rgba(212,255,0,.12) 0%,transparent 68%);"></div>
+    <div class="glow" style="bottom:-120px;left:22%;width:480px;height:480px;background:radial-gradient(circle,rgba(255,122,61,.09) 0%,transparent 68%);"></div>
 
     <div class="hero-eyebrow anim d1">Full-Stack Developer · Systems Programmer · Security Researcher</div>
     <h1 class="hero-name anim d2">Sila<span class="hl">Mulingi.</span></h1>
