@@ -8,21 +8,21 @@
 <style>
 /* ============================================================
    DESIGN SYSTEM — matches blog_systems_programming.html
-   Bright terminal aesthetic: #141414 base, #d4ff00 acid yellow,
+   Dark terminal aesthetic: #0a0a0a base, #e8ff47 acid yellow,
    Space Mono body, Syne display, grid + noise textures
 ============================================================ */
 :root {
-  --bg:       #141414;
-  --surface:  #1e1e1e;
-  --surface2: #252525;
-  --border:   #333333;
-  --border2:  #444444;
-  --accent:   #d4ff00;
-  --accent2:  #ff7a3d;
-  --accent3:  #00ffe5;
-  --text:     #f0ece0;
-  --muted:    #888888;
-  --muted2:   #666666;
+  --bg:       #0a0a0a;
+  --surface:  #111111;
+  --surface2: #161616;
+  --border:   #222222;
+  --border2:  #2e2e2e;
+  --accent:   #e8ff47;
+  --accent2:  #ff6b35;
+  --accent3:  #47ffe8;
+  --text:     #e8e4da;
+  --muted:    #666666;
+  --muted2:   #444444;
   --white:    #ffffff;
 
   --font-display: 'Syne', sans-serif;
@@ -64,7 +64,7 @@ body::before {
 }
 .cursor-ring {
   width: 32px; height: 32px;
-  border: 1px solid rgba(212,255,0,.45); border-radius: 50%;
+  border: 1px solid rgba(232,255,71,.35); border-radius: 50%;
   position: fixed; top: 0; left: 0;
   pointer-events: none; z-index: 9998;
   transform: translate(-50%,-50%);
@@ -84,7 +84,7 @@ nav {
 }
 nav.scrolled {
   border-color: var(--border);
-  background: rgba(20,20,20,.95);
+  background: rgba(10,10,10,.95);
   backdrop-filter: blur(10px);
 }
 .nav-logo {
@@ -144,9 +144,9 @@ section { padding: 5rem 3rem; border-top: 1px solid var(--border); }
 
 .tag { display: inline-block; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.25rem 0.7rem; border: 1px solid var(--border2); color: var(--muted); transition: all var(--transition); }
 .tag:hover { border-color: var(--accent); color: var(--accent); }
-.tag.y { border-color: rgba(212,255,0,.4); color: var(--accent); background: rgba(212,255,0,.08); }
-.tag.o { border-color: rgba(255,122,61,.4); color: var(--accent2); background: rgba(255,122,61,.08); }
-.tag.c { border-color: rgba(0,255,229,.4); color: var(--accent3); background: rgba(0,255,229,.08); }
+.tag.y { border-color: rgba(232,255,71,.3); color: var(--accent); background: rgba(232,255,71,.05); }
+.tag.o { border-color: rgba(255,107,53,.3); color: var(--accent2); background: rgba(255,107,53,.05); }
+.tag.c { border-color: rgba(71,255,232,.3); color: var(--accent3); background: rgba(71,255,232,.05); }
 
 @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
 .anim { opacity:0; animation: fadeUp .65s ease forwards; }
@@ -181,7 +181,7 @@ section { padding: 5rem 3rem; border-top: 1px solid var(--border); }
 
 /* ── ABOUT ── */
 .about-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 5rem; max-width: 1100px; }
-.about-body p { margin-bottom: 1.4rem; color: #d8d4cb; line-height: 1.9; }
+.about-body p { margin-bottom: 1.4rem; color: #c8c4bb; line-height: 1.9; }
 .about-body p:first-child { color: var(--text); }
 .skills-wrap { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .5rem; }
 .about-stats { display: flex; flex-direction: column; gap: 1px; background: var(--border); }
@@ -193,7 +193,7 @@ section { padding: 5rem 3rem; border-top: 1px solid var(--border); }
 .stat-lbl { font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); margin-top: .4rem; }
 .stat-box.inv { background: var(--accent); }
 .stat-box.inv .stat-num { color: var(--bg); }
-.stat-box.inv .stat-lbl { color: rgba(20,20,20,.6); }
+.stat-box.inv .stat-lbl { color: rgba(10,10,10,.6); }
 
 /* ── PROJECTS ── */
 .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px,1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); }
@@ -222,7 +222,7 @@ section { padding: 5rem 3rem; border-top: 1px solid var(--border); }
 .tl-period { font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--accent); margin-bottom: .6rem; }
 .tl-role { font-family: var(--font-display); font-size: 1.15rem; font-weight: 800; color: var(--white); margin-bottom: .25rem; }
 .tl-org { font-size: 11px; color: var(--muted); margin-bottom: .9rem; }
-.tl-desc { font-size: 12px; color: #d8d4cb; line-height: 1.8; max-width: 600px; }
+.tl-desc { font-size: 12px; color: #c8c4bb; line-height: 1.8; max-width: 600px; }
 .tl-tags { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 1rem; }
 
 /* ── BLOG ── */
@@ -235,7 +235,7 @@ section { padding: 5rem 3rem; border-top: 1px solid var(--border); }
 .blog-card:hover::after { opacity:1; transform:translateY(-50%) translateX(0); }
 .blog-meta { display:flex; gap:1.2rem; align-items:center; margin-bottom:.7rem; }
 .blog-date { font-size:10px; letter-spacing:.15em; color:var(--muted); }
-.blog-cat { font-size:10px; letter-spacing:.1em; text-transform:uppercase; padding:.2rem .6rem; background:rgba(212,255,0,.10); color:var(--accent); border:1px solid rgba(212,255,0,.35); }
+.blog-cat { font-size:10px; letter-spacing:.1em; text-transform:uppercase; padding:.2rem .6rem; background:rgba(232,255,71,.07); color:var(--accent); border:1px solid rgba(232,255,71,.2); }
 .blog-title { font-family:var(--font-display); font-size:1.2rem; font-weight:800; color:var(--white); margin-bottom:.6rem; line-height:1.3; }
 .blog-exc { font-size:12px; color:var(--muted); line-height:1.7; max-width:560px; }
 
@@ -255,13 +255,13 @@ section { padding: 5rem 3rem; border-top: 1px solid var(--border); }
 .reader-cat::before { content:'// '; color:var(--muted); }
 .reader-title { font-family:var(--font-display); font-size:clamp(2rem,5vw,3.5rem); font-weight:800; color:var(--white); line-height:1.05; letter-spacing:-.025em; margin-bottom:1rem; }
 .reader-meta { font-size:11px; color:var(--muted); }
-.reader-body { max-width:700px; font-size:14px; line-height:1.9; color:#d8d4cb; }
+.reader-body { max-width:700px; font-size:14px; line-height:1.9; color:#c8c4bb; }
 .reader-body p { margin-bottom:1.4rem; }
 .reader-body h2 { font-family:var(--font-display); font-size:1.6rem; font-weight:800; color:var(--white); margin:3rem 0 1rem; letter-spacing:-.02em; }
 .reader-body h3 { font-family:var(--font-display); font-size:1.1rem; font-weight:700; color:var(--accent); margin:2rem 0 .7rem; }
 .reader-body code { font-size:12px; background:var(--surface2); padding:.15rem .4rem; border:1px solid var(--border2); color:#a8e6a3; }
 .reader-body pre { background:var(--surface2); border:1px solid var(--border2); border-left:3px solid var(--accent); padding:1.5rem; overflow-x:auto; margin:2rem 0; font-size:12px; color:#a8e6a3; line-height:1.8; }
-.reader-body blockquote { border-left:3px solid var(--accent); padding:1rem 1.5rem; background:rgba(212,255,0,.05); margin:2rem 0; font-family:var(--font-display); font-size:1.15rem; font-weight:700; color:var(--white); }
+.reader-body blockquote { border-left:3px solid var(--accent); padding:1rem 1.5rem; background:rgba(232,255,71,.03); margin:2rem 0; font-family:var(--font-display); font-size:1.15rem; font-weight:700; color:var(--white); }
 
 /* ── CONTACT ── */
 .contact-grid { display:grid; grid-template-columns:1fr 1fr; gap:5rem; max-width:1000px; }
@@ -305,7 +305,7 @@ footer { border-top:1px solid var(--border); padding:2rem 3rem; display:flex; ju
 @media (max-width: 860px) {
   nav { padding: 0 1.5rem; }
   .nav-links { display: none; }
-  .nav-links.open { display:flex; flex-direction:column; gap:0; position:fixed; inset:var(--nav-h) 0 0 0; background:rgba(20,20,20,.98); padding:2rem; z-index:499; }
+  .nav-links.open { display:flex; flex-direction:column; gap:0; position:fixed; inset:var(--nav-h) 0 0 0; background:rgba(10,10,10,.98); padding:2rem; z-index:499; }
   .nav-links.open a { font-size:1.1rem; padding:1rem; border-bottom:1px solid var(--border); }
   .nav-ham { display: flex; }
   #hero { padding: 2rem 1.5rem 3rem; }
@@ -347,8 +347,8 @@ footer { border-top:1px solid var(--border); padding:2rem 3rem; display:flex; ju
 
   <section id="hero" style="border-top:none;padding-top:0;">
     <div class="grid-bg"></div>
-    <div class="glow" style="top:-180px;right:-180px;width:640px;height:640px;background:radial-gradient(circle,rgba(212,255,0,.12) 0%,transparent 68%);"></div>
-    <div class="glow" style="bottom:-120px;left:22%;width:480px;height:480px;background:radial-gradient(circle,rgba(255,122,61,.09) 0%,transparent 68%);"></div>
+    <div class="glow" style="top:-180px;right:-180px;width:640px;height:640px;background:radial-gradient(circle,rgba(232,255,71,.09) 0%,transparent 68%);"></div>
+    <div class="glow" style="bottom:-120px;left:22%;width:480px;height:480px;background:radial-gradient(circle,rgba(255,107,53,.07) 0%,transparent 68%);"></div>
 
     <div class="hero-eyebrow anim d1">Full-Stack Developer · Systems Programmer · Security Researcher</div>
     <h1 class="hero-name anim d2">Sila<span class="hl">Mulingi.</span></h1>
@@ -574,7 +574,7 @@ footer { border-top:1px solid var(--border); padding:2rem 3rem; display:flex; ju
         <p style="color:var(--muted);font-size:13px;max-width:380px;line-height:1.8;">Whether it's a web application, security collaboration, systems project, or just a conversation about technology — I'm always interested.</p>
         <div class="contact-items">
           <div class="contact-item"><div class="ci-icon">📍</div><div><span class="ci-lbl">Location</span><div class="ci-val">Nairobi, Kenya</div></div></div>
-          <div class="contact-item"><div class="ci-icon">✉️</div><div><span class="ci-lbl">Email</span><div class="ci-val"><a href="/cdn-cgi/l/email-protection#add ec4c1ccc0d8c1c4c3cac4edcac0ccc4c183cec2c0"><span class="__cf_email__" data-cfemail="add ec4c1ccc0d8c1c4c3cac4edcac0ccc4c183cec2c0">[email&#160;protected]</span></a></div></div></div>
+          <div class="contact-item"><div class="ci-icon">✉️</div><div><span class="ci-lbl">Email</span><div class="ci-val"><a href="mailto:silamulingi@gmail.com">silamulingi@gmail.com</a></div></div></div>
           <div class="contact-item"><div class="ci-icon">📱</div><div><span class="ci-lbl">Phone</span><div class="ci-val"><a href="tel:+254717486607">0717 486 607</a></div></div></div>
           <div class="contact-item"><div class="ci-icon">💻</div><div><span class="ci-lbl">GitHub</span><div class="ci-val"><a href="https://github.com/IamSila" target="_blank">github.com/IamSila</a></div></div></div>
         </div>
@@ -598,7 +598,7 @@ footer { border-top:1px solid var(--border); padding:2rem 3rem; display:flex; ju
   <div class="footer-copy">© 2025 · All Rights Reserved</div>
   <div class="footer-links">
     <a href="https://github.com/IamSila" target="_blank">GitHub</a>
-    <a href="/cdn-cgi/l/email-protection#e4978d88858991888d8a838da48389858d88ca878b89">Email</a>
+    <a href="mailto:silamulingi@gmail.com">Email</a>
     <a href="#" onclick="return go('blog')">Blog</a>
   </div>
 </footer>
@@ -620,7 +620,7 @@ footer { border-top:1px solid var(--border); padding:2rem 3rem; display:flex; ju
   </div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 /* Cursor */
 const cur=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
 let mx=0,my=0,rx=0,ry=0;
@@ -760,17 +760,12 @@ function publishPost(){
 
 /* Contact */
 function submitContact(btn){
-  const form=btn.closest('.contact-form');
-  const inputs=form.querySelectorAll('input,textarea');
-  const vals=[...inputs].map(i=>i.value.trim());
-  if(vals.some(v=>!v)){alert('Please fill in all fields.');return;}
-  btn.textContent='Sent ✓';
-  btn.style.background='var(--accent3)';
-  btn.style.borderColor='var(--accent3)';
-  btn.disabled=true;
+  const o=btn.textContent;
+  btn.textContent='Message Sent ✓';
+  btn.style.cssText='background:var(--accent3);border-color:var(--accent3);color:var(--bg)';
+  setTimeout(()=>{btn.textContent=o;btn.style.cssText='';},3000);
 }
 
-/* Init */
 renderBlog();
 </script>
 </body>
